@@ -108,24 +108,28 @@ class UNet(nn.Module): #572x572
 
         enc1 = self.encoder1_relu1(self.encoder1_conv1(x))
         enc1 = self.encoder1_relu2(self.encoder1_conv2(enc1))
-        enc1_pool = self.encoder1_pool(enc1_relu2)
+        self.feature_maps['enc1_for_crop'] = enc1
+        enc1_pool = self.encoder1_pool(enc1)
         print(enc1_pool.shape) # torch.Size([1, 64, 284, 284])
         self.feature_maps['encoder1'] = enc1_pool
 
         enc2 = self.encoder2_relu1(self.encoder2_conv1(enc1_pool))
         enc2 = self.encoder2_relu2(self.encoder2_conv2(enc2))
+        self.feature_maps['enc2_for_crop'] = enc2
         enc2_pool = self.encoder2_pool(enc2)
         print(enc2_pool.shape) # torch.Size([1, 128, 140, 140])
         self.feature_maps['encoder2'] = enc2_pool
 
         enc3 = self.encoder3_relu1(self.encoder3_conv1(enc2_pool))
         enc3 = self.encoder3_relu2(self.encoder3_conv2(enc3))
+        self.feature_maps['enc3_for_crop'] = enc3
         enc3_pool = self.encoder3_pool(enc3)
         print(enc3_pool.shape) # torch.Size([1, 256, 68, 68])
         self.feature_maps['encoder3'] = enc3_pool
 
         enc4 = self.encoder4_relu1(self.encoder4_conv1(enc3_pool))
         enc4 = self.encoder4_relu2(self.encoder4_conv2(enc4))
+        self.feature_maps['enc4_for_crop'] = enc4
         enc4_pool = self.encoder4_pool(enc4)
         print(enc4_pool.shape) # torch.Size([1, 512, 32, 32])
         self.feature_maps['encoder4'] = enc4_pool
