@@ -211,11 +211,12 @@ if __name__ == "__main__":
     print("Output shape:", output.shape) # torch.Size([1, 2, 388, 388])
     feature_maps_dir = os.getcwd() + '/feature_maps'
     create_dir(feature_maps_dir)
+    # Visualize and save the feature maps
     for layer_name, feature_map in model.feature_maps.items():
         feature_map = feature_map.squeeze(0)
         if len(feature_map.shape) > 2:
             feature_map = feature_map.mean(dim=0)
         feature_map_np = feature_map.detach().cpu().numpy()
-        plt.imshow(feature_map_np, cmap='gray')
+        # Apply the "gray" colormap
         plt.axis('off')
-        plt.savefig(f"feature_maps/{layer_name}.jpeg", bbox_inches='tight')
+        plt.imsave(f"{feature_maps_dir}/{layer_name}.jpeg", feature_map_np, cmap='gray')
