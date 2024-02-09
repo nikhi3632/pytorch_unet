@@ -5,9 +5,14 @@ import torch.nn as nn
 from PIL import Image
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
-import os
+import os, shutil
 torch_seed = 42
 torch.manual_seed(torch_seed)
+
+def create_dir(dir_path):
+    if os.path.exists(dir_path):
+        shutil.rmtree(dir_path)
+    os.makedirs(dir_path)
 
 class UNet(nn.Module): #572x572
     def __init__(self, in_channels, out_channels):
@@ -92,9 +97,18 @@ class UNet(nn.Module): #572x572
         print(x.shape) # torch.Size([1, 1, 572, 572])
         self.feature_maps['input'] = x
         # Encoder
+        enc1_conv1 = self.encoder1_conv1(x)
+        self.feature_maps['enc1_conv1'] = enc1_conv1
+        enc1_relu1 = self.encoder1_relu1(enc1_conv1)
+        self.feature_maps['enc1_relu1'] = enc1_relu1
+        enc1_conv2 = self.encoder1_conv2(enc1_relu1)
+        self.feature_maps['enc1_conv2'] = enc1_conv2
+        enc1_relu2 = self.encoder1_relu2(enc1_conv2)
+        self.feature_maps['enc1_relu2'] = enc1_relu2
+
         enc1 = self.encoder1_relu1(self.encoder1_conv1(x))
         enc1 = self.encoder1_relu2(self.encoder1_conv2(enc1))
-        enc1_pool = self.encoder1_pool(enc1)
+        enc1_pool = self.encoder1_pool(enc1_relu2)
         print(enc1_pool.shape) # torch.Size([1, 64, 284, 284])
         self.feature_maps['encoder1'] = enc1_pool
 
@@ -124,36 +138,48 @@ class UNet(nn.Module): #572x572
 
         # Decoder
         dec1_upsampled = self.decoder1_upsample(bottleneck)
+        self.feature_maps['decoder1_before_skip'] = dec1_upsampled
         # Crop the corresponding feature map from encoder 4
         enc4_crop = self.copy_and_crop(enc4, dec1_upsampled.shape[2:])
+        self.feature_maps['decoder1_before_skip_enc4'] = enc4_crop
         dec1 = torch.cat([dec1_upsampled, enc4_crop], dim=1)  # Skip connection
+        self.feature_maps['decoder1_after_skip'] = dec1
         dec1 = self.decoder1_relu1(self.decoder1_conv1(dec1))
         dec1 = self.decoder1_relu2(self.decoder1_conv2(dec1))
         print(dec1.shape) # torch.Size([1, 512, 52, 52])
         self.feature_maps['decoder1'] = dec1
 
         dec2_upsampled = self.decoder2_upsample(dec1)
+        self.feature_maps['decoder2_before_skip'] = dec2_upsampled
         # Crop the corresponding feature map from encoder 3
         enc3_crop = self.copy_and_crop(enc3, dec2_upsampled.shape[2:])
+        self.feature_maps['decoder2_before_skip_enc3'] = enc3_crop
         dec2 = torch.cat([dec2_upsampled, enc3_crop], dim=1)  # Skip connection
+        self.feature_maps['decoder2_after_skip'] = dec2
         dec2 = self.decoder2_relu1(self.decoder2_conv1(dec2))
         dec2 = self.decoder2_relu2(self.decoder2_conv2(dec2))
         print(dec2.shape) # torch.Size([1, 256, 100, 100])
         self.feature_maps['decoder2'] = dec2
 
         dec3_upsampled = self.decoder3_upsample(dec2)
+        self.feature_maps['decoder3_before_skip'] = dec3_upsampled
         # Crop the corresponding feature map from encoder 2
         enc2_crop = self.copy_and_crop(enc2, dec3_upsampled.shape[2:])
+        self.feature_maps['decoder3_before_skip_enc2'] = enc2_crop
         dec3 = torch.cat([dec3_upsampled, enc2_crop], dim=1)  # Skip connection
+        self.feature_maps['decoder3_after_skip'] = dec3
         dec3 = self.decoder3_relu1(self.decoder3_conv1(dec3))
         dec3 = self.decoder3_relu2(self.decoder3_conv2(dec3))
         print(dec3.shape) # torch.Size([1, 128, 196, 196])
         self.feature_maps['decoder3'] = dec3
 
         dec4_upsampled = self.decoder4_upsample(dec3)
+        self.feature_maps['decoder4_before_skip'] = dec4_upsampled
         # Crop the corresponding feature map from encoder 1
         enc1_crop = self.copy_and_crop(enc1, dec4_upsampled.shape[2:])
+        self.feature_maps['decoder4_before_skip_enc1'] = enc1_crop
         dec4 = torch.cat([dec4_upsampled, enc1_crop], dim=1)  # Skip connection
+        self.feature_maps['decoder4_after_skip'] = dec4
         dec4 = self.decoder4_relu1(self.decoder4_conv1(dec4))
         dec4 = self.decoder4_relu2(self.decoder4_conv2(dec4))
         print(dec4.shape) # torch.Size([1, 64, 388, 388])
@@ -179,8 +205,8 @@ if __name__ == "__main__":
     model = UNet(in_channels=1, out_channels=2)
     output = model(sample_input)
     print("Output shape:", output.shape) # torch.Size([1, 2, 388, 388])
-
-    os.makedirs("feature_maps", exist_ok=True)
+    feature_maps_dir = os.getcwd() + '/feature_maps'
+    create_dir(feature_maps_dir)
     for layer_name, feature_map in model.feature_maps.items():
         feature_map = feature_map.squeeze(0)
         if len(feature_map.shape) > 2:
@@ -188,5 +214,4 @@ if __name__ == "__main__":
         feature_map_np = feature_map.detach().cpu().numpy()
         plt.imshow(feature_map_np, cmap='gray')
         plt.axis('off')
-        plt.title(layer_name)
         plt.savefig(f"feature_maps/{layer_name}.png", bbox_inches='tight')
