@@ -6,7 +6,7 @@ from PIL import Image
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 import os, shutil
-torch_seed = 42
+torch_seed = 0
 torch.manual_seed(torch_seed)
 
 def create_dir(dir_path):
@@ -218,4 +218,4 @@ if __name__ == "__main__":
         feature_map_np = feature_map.detach().cpu().numpy()
         plt.imshow(feature_map_np, cmap='gray')
         plt.axis('off')
-        plt.savefig(f"feature_maps/{layer_name}.png", bbox_inches='tight')
+        plt.savefig(f"feature_maps/{layer_name}.jpeg", bbox_inches='tight')
