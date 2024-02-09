@@ -108,28 +108,28 @@ class UNet(nn.Module): #572x572
 
         enc1 = self.encoder1_relu1(self.encoder1_conv1(x))
         enc1 = self.encoder1_relu2(self.encoder1_conv2(enc1))
-        self.feature_maps['enc1_for_crop'] = enc1
+        self.feature_maps['decoder4_has_this_encoder1_for_crop'] = enc1
         enc1_pool = self.encoder1_pool(enc1)
         print(enc1_pool.shape) # torch.Size([1, 64, 284, 284])
         self.feature_maps['encoder1'] = enc1_pool
 
         enc2 = self.encoder2_relu1(self.encoder2_conv1(enc1_pool))
         enc2 = self.encoder2_relu2(self.encoder2_conv2(enc2))
-        self.feature_maps['enc2_for_crop'] = enc2
+        self.feature_maps['decoder3_has_this_encoder2_for_crop'] = enc2
         enc2_pool = self.encoder2_pool(enc2)
         print(enc2_pool.shape) # torch.Size([1, 128, 140, 140])
         self.feature_maps['encoder2'] = enc2_pool
 
         enc3 = self.encoder3_relu1(self.encoder3_conv1(enc2_pool))
         enc3 = self.encoder3_relu2(self.encoder3_conv2(enc3))
-        self.feature_maps['enc3_for_crop'] = enc3
+        self.feature_maps['decoder2_has_this_encoder3_for_crop'] = enc3
         enc3_pool = self.encoder3_pool(enc3)
         print(enc3_pool.shape) # torch.Size([1, 256, 68, 68])
         self.feature_maps['encoder3'] = enc3_pool
 
         enc4 = self.encoder4_relu1(self.encoder4_conv1(enc3_pool))
         enc4 = self.encoder4_relu2(self.encoder4_conv2(enc4))
-        self.feature_maps['enc4_for_crop'] = enc4
+        self.feature_maps['decoder1_has_this_encoder4_for_crop'] = enc4
         enc4_pool = self.encoder4_pool(enc4)
         print(enc4_pool.shape) # torch.Size([1, 512, 32, 32])
         self.feature_maps['encoder4'] = enc4_pool
@@ -145,7 +145,7 @@ class UNet(nn.Module): #572x572
         self.feature_maps['decoder1_before_skip'] = dec1_upsampled
         # Crop the corresponding feature map from encoder 4
         enc4_crop = self.copy_and_crop(enc4, dec1_upsampled.shape[2:])
-        self.feature_maps['decoder1_before_skip_enc4'] = enc4_crop
+        self.feature_maps['decoder1_encoder4_after_crop'] = enc4_crop
         dec1 = torch.cat([dec1_upsampled, enc4_crop], dim=1)  # Skip connection
         self.feature_maps['decoder1_after_skip'] = dec1
         dec1 = self.decoder1_relu1(self.decoder1_conv1(dec1))
@@ -157,7 +157,7 @@ class UNet(nn.Module): #572x572
         self.feature_maps['decoder2_before_skip'] = dec2_upsampled
         # Crop the corresponding feature map from encoder 3
         enc3_crop = self.copy_and_crop(enc3, dec2_upsampled.shape[2:])
-        self.feature_maps['decoder2_before_skip_enc3'] = enc3_crop
+        self.feature_maps['decoder2_encoder3_after_crop'] = enc3_crop
         dec2 = torch.cat([dec2_upsampled, enc3_crop], dim=1)  # Skip connection
         self.feature_maps['decoder2_after_skip'] = dec2
         dec2 = self.decoder2_relu1(self.decoder2_conv1(dec2))
@@ -169,7 +169,7 @@ class UNet(nn.Module): #572x572
         self.feature_maps['decoder3_before_skip'] = dec3_upsampled
         # Crop the corresponding feature map from encoder 2
         enc2_crop = self.copy_and_crop(enc2, dec3_upsampled.shape[2:])
-        self.feature_maps['decoder3_before_skip_enc2'] = enc2_crop
+        self.feature_maps['decoder3_encoder2_after_crop'] = enc2_crop
         dec3 = torch.cat([dec3_upsampled, enc2_crop], dim=1)  # Skip connection
         self.feature_maps['decoder3_after_skip'] = dec3
         dec3 = self.decoder3_relu1(self.decoder3_conv1(dec3))
@@ -181,7 +181,7 @@ class UNet(nn.Module): #572x572
         self.feature_maps['decoder4_before_skip'] = dec4_upsampled
         # Crop the corresponding feature map from encoder 1
         enc1_crop = self.copy_and_crop(enc1, dec4_upsampled.shape[2:])
-        self.feature_maps['decoder4_before_skip_enc1'] = enc1_crop
+        self.feature_maps['decoder4_encoder1_after_crop'] = enc1_crop
         dec4 = torch.cat([dec4_upsampled, enc1_crop], dim=1)  # Skip connection
         self.feature_maps['decoder4_after_skip'] = dec4
         dec4 = self.decoder4_relu1(self.decoder4_conv1(dec4))

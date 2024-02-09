@@ -16,8 +16,8 @@ def create_dir(dir_path):
         shutil.rmtree(dir_path)
     os.makedirs(dir_path)
 
-output_artifacts_dir = 'output_artifacts'
-create_dir(output_artifacts_dir)
+train_artifacts_dir = 'train_artifacts'
+create_dir(train_artifacts_dir)
 
 class UNet(nn.Module): #572x572
     def __init__(self, in_channels, out_channels):
@@ -227,7 +227,7 @@ for epoch in range(num_epochs):
         # Apply the "gray" colormap
         plt.imshow(output_gray, cmap='gray')
         plt.axis('off')
-        plt.savefig(f'{output_artifacts_dir}/output_epoch_{epoch+1}.jpeg', bbox_inches='tight', pad_inches=0)
+        plt.savefig(f'{train_artifacts_dir}/output_epoch_{epoch+1}.jpeg', bbox_inches='tight', pad_inches=0)
         plt.close()
 
 print('Training finished!')

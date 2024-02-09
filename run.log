@@ -1,0 +1,39 @@
+Building Unet and Generating Feature Maps...
+torch.Size([1, 1, 572, 572])
+torch.Size([1, 64, 284, 284])
+torch.Size([1, 128, 140, 140])
+torch.Size([1, 256, 68, 68])
+torch.Size([1, 512, 32, 32])
+torch.Size([1, 1024, 28, 28])
+torch.Size([1, 512, 52, 52])
+torch.Size([1, 256, 100, 100])
+torch.Size([1, 128, 196, 196])
+torch.Size([1, 64, 388, 388])
+Output shape: torch.Size([1, 2, 388, 388])
+Training UNet...
+Epoch [1/25], Step [1/1], Loss: 0.9576
+Epoch [2/25], Step [1/1], Loss: 0.9168
+Epoch [3/25], Step [1/1], Loss: 0.8511
+Epoch [4/25], Step [1/1], Loss: 0.7525
+Epoch [5/25], Step [1/1], Loss: 0.7498
+Epoch [6/25], Step [1/1], Loss: 0.7548
+Epoch [7/25], Step [1/1], Loss: 0.7507
+Epoch [8/25], Step [1/1], Loss: 0.7468
+Epoch [9/25], Step [1/1], Loss: 0.7484
+Epoch [10/25], Step [1/1], Loss: 0.7467
+Epoch [11/25], Step [1/1], Loss: 0.7448
+Epoch [12/25], Step [1/1], Loss: 0.7432
+Epoch [13/25], Step [1/1], Loss: 0.8411
+Epoch [14/25], Step [1/1], Loss: 21.8694
+Epoch [15/25], Step [1/1], Loss: 0.7872
+Epoch [16/25], Step [1/1], Loss: 0.7422
+Epoch [17/25], Step [1/1], Loss: 0.7435
+Epoch [18/25], Step [1/1], Loss: 0.7426
+Epoch [19/25], Step [1/1], Loss: 0.7423
+Epoch [20/25], Step [1/1], Loss: 0.7427
+Epoch [21/25], Step [1/1], Loss: 0.7427
+Epoch [22/25], Step [1/1], Loss: 0.7423
+Epoch [23/25], Step [1/1], Loss: 0.7421
+Epoch [24/25], Step [1/1], Loss: 0.7423
+Epoch [25/25], Step [1/1], Loss: 0.7423
+Training finished!
