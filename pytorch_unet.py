@@ -142,6 +142,7 @@ class UNet(nn.Module): #572x572
 
         # Decoder
         dec1_upsampled = self.decoder1_upsample(bottleneck)
+        # print(dec1_upsampled.shape) # torch.Size([1, 512, 56, 56])
         self.feature_maps['decoder1_before_skip'] = dec1_upsampled
         # Crop the corresponding feature map from encoder 4
         enc4_crop = self.copy_and_crop(enc4, dec1_upsampled.shape[2:])
@@ -154,6 +155,7 @@ class UNet(nn.Module): #572x572
         self.feature_maps['decoder1'] = dec1
 
         dec2_upsampled = self.decoder2_upsample(dec1)
+        # print(dec2_upsampled.shape) # torch.Size([1, 256, 104, 104]
         self.feature_maps['decoder2_before_skip'] = dec2_upsampled
         # Crop the corresponding feature map from encoder 3
         enc3_crop = self.copy_and_crop(enc3, dec2_upsampled.shape[2:])
@@ -166,6 +168,7 @@ class UNet(nn.Module): #572x572
         self.feature_maps['decoder2'] = dec2
 
         dec3_upsampled = self.decoder3_upsample(dec2)
+        # print(dec3_upsampled.shape) # torch.Size([1, 128, 200, 200])
         self.feature_maps['decoder3_before_skip'] = dec3_upsampled
         # Crop the corresponding feature map from encoder 2
         enc2_crop = self.copy_and_crop(enc2, dec3_upsampled.shape[2:])
@@ -178,6 +181,7 @@ class UNet(nn.Module): #572x572
         self.feature_maps['decoder3'] = dec3
 
         dec4_upsampled = self.decoder4_upsample(dec3)
+        # print(dec4_upsampled.shape) # torch.Size([1, 64, 392, 392])
         self.feature_maps['decoder4_before_skip'] = dec4_upsampled
         # Crop the corresponding feature map from encoder 1
         enc1_crop = self.copy_and_crop(enc1, dec4_upsampled.shape[2:])
